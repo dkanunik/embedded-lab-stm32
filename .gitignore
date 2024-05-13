@@ -2,3 +2,5 @@
 **/.idea/*
 **/cmake-build-debug/
 *.iml
+*/Binaries/*
+/embedded-lab-stm32.launch

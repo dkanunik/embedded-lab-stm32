@@ -5,7 +5,7 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHangle){
 
 	// 1. configure the mode of gpio pin
 	if (pGPIOHangle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG) {
-		temp = (pGPIOHangle->GPIO_PinConfig->GPIO_PinMode << (2 * pGPIOHangle->GPIO_PinConfig.GPIO_PinNumber));
+		temp = (pGPIOHangle->GPIO_PinConfig.GPIO_PinMode << (2 * pGPIOHangle->GPIO_PinConfig.GPIO_PinNumber));
 		pGPIOHangle->pGPIOx->GPIOx_MODER &= ~(0x3 << pGPIOHangle->GPIO_PinConfig.GPIO_PinNumber);
 		pGPIOHangle->pGPIOx->GPIOx_MODER |= temp;
 	} else {
@@ -39,13 +39,13 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHangle){
 	if (pGPIOHangle->GPIO_PinConfig.GPIO_PinAltFunMode == GPIO_MODE_ALTFN) {
 		uint8_t temp1, temp2;
 		temp1 = pGPIOHangle->GPIO_PinConfig.GPIO_PinNumber / 8;
-		temp1 = pGPIOHangle->GPIO_PinConfig.GPIO_PinNumber % 8;
-		pGPIOHangle->pGPIOx->AFR[temp1] |= (pGPIOHangle->GPIO_PinConfig.GPIO_PinAltFunMode << (4 * temp2));
+		temp2 = pGPIOHangle->GPIO_PinConfig.GPIO_PinNumber % 8;
+		pGPIOHangle->pGPIOx->GPIOx_AFR[temp1] |= (pGPIOHangle->GPIO_PinConfig.GPIO_PinAltFunMode << (4 * temp2));
 	}
 
 }
 
-void GPIO_DeInit(GPIO_Handle_t *pGPIOx){
+void GPIO_DeInit(GPIO_RegDef_t *pGPIOx) {
 	if (pGPIOx == GPIOA) {
 		GPIOA_REG_RESET();
 	} else if (pGPIOx == GPIOB) {
@@ -67,8 +67,8 @@ void GPIO_DeInit(GPIO_Handle_t *pGPIOx){
 	}
 }
 
-void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t enORdi) {
-	if (enORdi == ENABLE) {
+void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t enORdis) {
+	if (enORdis == ENABLE) {
 		if (pGPIOx == GPIOA) {
 			GPIOA_PCLK_EN();
 		} else if (pGPIOx == GPIOB) {
@@ -135,9 +135,9 @@ void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t value){
 	pGPIOx->GPIOx_ODR = value;
 }
 
-void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t value){
-
+void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t pinNumber){
+	pGPIOx->GPIOx_ODR ^= (1 << pinNumber);
 }
 
-void GPIO_IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t enORdi){}
+void GPIO_IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t enORdis){}
 void GPIO_Handling(int8_t PinNumber){}
